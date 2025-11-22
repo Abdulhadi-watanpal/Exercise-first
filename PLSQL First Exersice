@@ -1,0 +1,245 @@
+/* 1. Question: A company wants to calculate the annual salary of an employee.
+   Write a PL/SQL block that takes basic_salary and bonus as variables and prints the annual salary. */
+DECLARE
+  basic_salary NUMBER := 15000;
+  bonus NUMBER := 3000;
+  annual_salary NUMBER;
+BEGIN
+  annual_salary := basic_salary + bonus;
+  DBMS_OUTPUT.PUT_LINE('Annual Salary: ' || annual_salary);
+END;
+/
+------------------------------------------------------------
+/* 2. Question: A university stores a student’s marks in 3 subjects.
+   Write a PL/SQL block to calculate the average marks and display the result. */
+DECLARE
+  s1 NUMBER := 80;
+  s2 NUMBER := 75;
+  s3 NUMBER := 90;
+  avg_marks NUMBER;
+BEGIN
+  avg_marks := (s1 + s2 + s3) / 3;
+  DBMS_OUTPUT.PUT_LINE('Average = ' || avg_marks);
+END;
+/
+------------------------------------------------------------
+/* 3. Question: A bank system stores a customer’s account balance.
+   - If balance < 1000 → print "Low Balance"
+   - If balance between 1000 and 5000 → print "Sufficient Balance"
+   - If balance > 5000 → print "High Balance"
+   Write a PL/SQL block using IF-ELSIF. */
+DECLARE
+  balance NUMBER := 4500;
+BEGIN
+  IF balance < 1000 THEN
+    DBMS_OUTPUT.PUT_LINE('Low Balance');
+  ELSIF balance >= 1000 AND balance <= 5000 THEN
+    DBMS_OUTPUT.PUT_LINE('Sufficient Balance');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('High Balance');
+  END IF;
+END;
+/
+------------------------------------------------------------
+/* 4. Question: A grading system accepts a student’s percentage.
+   - 90–100 → "A Grade"
+   - 75–89 → "B Grade"
+   - 50–74 → "C Grade"
+   - Below 50 → "Fail"
+   Write using a CASE statement. */
+DECLARE
+  percent NUMBER := 82;
+BEGIN
+  CASE
+    WHEN percent BETWEEN 90 AND 100 THEN DBMS_OUTPUT.PUT_LINE('A Grade');
+    WHEN percent BETWEEN 75 AND 89 THEN DBMS_OUTPUT.PUT_LINE('B Grade');
+    WHEN percent BETWEEN 50 AND 74 THEN DBMS_OUTPUT.PUT_LINE('C Grade');
+    ELSE DBMS_OUTPUT.PUT_LINE('Fail');
+  END CASE;
+END;
+/
+------------------------------------------------------------
+/* 5. Question: A shopping store gives discounts:
+   - If the bill > 5000 → 20% discount
+   - If the bill between 2000 and 5000 → 10% discount
+   - Otherwise no discount
+   Write a PL/SQL block to calculate final bill after discount. */
+DECLARE
+  bill NUMBER := 4200;
+  discount NUMBER := 0;
+  final_bill NUMBER;
+BEGIN
+  IF bill > 5000 THEN
+    discount := bill * 0.20;
+  ELSIF bill >= 2000 AND bill <= 5000 THEN
+    discount := bill * 0.10;
+  END IF;
+
+  final_bill := bill - discount;
+  DBMS_OUTPUT.PUT_LINE('Final Bill: ' || final_bill);
+END;
+/
+------------------------------------------------------------
+/* 6. Question: Write a PL/SQL block that prints the multiplication table of a number entered by the user (example: table of 7). */
+DECLARE
+  n NUMBER := 7;
+BEGIN
+  FOR i IN 1..10 LOOP
+    DBMS_OUTPUT.PUT_LINE(n || ' x ' || i || ' = ' || (n * i));
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 7. Question: A company wants to print employee IDs from 100 to 120. Use a FOR LOOP to print them. */
+BEGIN
+  FOR id IN 100..120 LOOP
+    DBMS_OUTPUT.PUT_LINE('Employee ID: ' || id);
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 8. Question: Write a PL/SQL block to display the factorial of a given number using a WHILE loop. */
+DECLARE
+  n NUMBER := 5;
+  f NUMBER := 1;
+  i NUMBER := 1;
+BEGIN
+  WHILE i <= n LOOP
+    f := f * i;
+    i := i + 1;
+  END LOOP;
+
+  DBMS_OUTPUT.PUT_LINE('Factorial = ' || f);
+END;
+/
+------------------------------------------------------------
+/* 9. Question: A countdown timer should print numbers from 10 down to 1 using a REVERSE FOR loop. */
+BEGIN
+  FOR i IN REVERSE 1..10 LOOP
+    DBMS_OUTPUT.PUT_LINE(i);
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 10. Question: Print the names of all employees in the IT department using a FOR loop with a SELECT query. */
+DECLARE
+  CURSOR c IS
+    SELECT emp_name FROM employees WHERE dept_id = 'IT';
+BEGIN
+  FOR r IN c LOOP
+    DBMS_OUTPUT.PUT_LINE(r.emp_name);
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 11. Question: Give a 10% salary increase to all employees whose salary < 3000. Use a loop to update salaries. */
+DECLARE
+  CURSOR c IS
+    SELECT emp_id, salary FROM employees WHERE salary < 3000;
+BEGIN
+  FOR r IN c LOOP
+    UPDATE employees
+    SET salary = r.salary * 1.10
+    WHERE emp_id = r.emp_id;
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 12. Question: Display all employees whose salary is above the average salary of the company. */
+DECLARE
+  avg_sal NUMBER;
+BEGIN
+  SELECT AVG(salary) INTO avg_sal FROM employees;
+
+  FOR r IN (SELECT emp_name, salary FROM employees WHERE salary > avg_sal) LOOP
+    DBMS_OUTPUT.PUT_LINE(r.emp_name || ' --> ' || r.salary);
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 13. Question: Write a PL/SQL block that prints:
+   - "High Earner" if salary > 8000
+   - "Mid Earner" if salary between 4000–8000
+   - "Low Earner" otherwise. */
+DECLARE
+  s NUMBER := 6500;
+BEGIN
+  IF s > 8000 THEN
+    DBMS_OUTPUT.PUT_LINE('High Earner');
+  ELSIF s >= 4000 AND s <= 8000 THEN
+    DBMS_OUTPUT.PUT_LINE('Mid Earner');
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Low Earner');
+  END IF;
+END;
+/
+------------------------------------------------------------
+/* 14. Question: Write a PL/SQL program that prints the total salary cost of each department (group by dept_id). */
+DECLARE
+  CURSOR c IS
+    SELECT dept_id, SUM(salary) AS total_sal
+    FROM employees
+    GROUP BY dept_id;
+BEGIN
+  FOR r IN c LOOP
+    DBMS_OUTPUT.PUT_LINE('Dept ' || r.dept_id || ': ' || r.total_sal);
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 15. Question: Write a PL/SQL block that accepts a number n and prints the Fibonacci sequence up to n terms. */
+DECLARE
+  n NUMBER := 10;
+  a NUMBER := 0;
+  b NUMBER := 1;
+  c NUMBER;
+BEGIN
+  DBMS_OUTPUT.PUT_LINE(a);
+  DBMS_OUTPUT.PUT_LINE(b);
+
+  FOR i IN 3..n LOOP
+    c := a + b;
+    DBMS_OUTPUT.PUT_LINE(c);
+    a := b;
+    b := c;
+  END LOOP;
+END;
+/
+------------------------------------------------------------
+/* 16. Question: A bank wants to process 100 transactions stored in a table transactions(txn_id, amount, type)
+   where type = 'CREDIT' or 'DEBIT'.
+   Write a PL/SQL block that calculates final account balance after all transactions. */
+DECLARE
+  balance NUMBER := 0;
+BEGIN
+  FOR r IN (SELECT amount, type FROM transactions) LOOP
+    IF r.type = 'CREDIT' THEN
+      balance := balance + r.amount;
+    ELSE
+      balance := balance - r.amount;
+    END IF;
+  END LOOP;
+
+  DBMS_OUTPUT.PUT_LINE('Final Balance: ' || balance);
+END;
+/
+------------------------------------------------------------
+/* 17. Question: Write a PL/SQL procedure that takes an employee ID and prints:
+   - Employee Name
+   - Department Name
+   - Current Salary */
+CREATE OR REPLACE PROCEDURE emp_info(p_empid NUMBER) AS
+  v_name  employees.emp_name%TYPE;
+  v_dept  employees.dept_id%TYPE;
+  v_sal   employees.salary%TYPE;
+BEGIN
+  SELECT emp_name, dept_id, salary
+  INTO v_name, v_dept, v_sal
+  FROM employees
+  WHERE emp_id = p_empid;
+
+  DBMS_OUTPUT.PUT_LINE('Name: ' || v_name);
+  DBMS_OUTPUT.PUT_LINE('Department: ' || v_dept);
+  DBMS_OUTPUT.PUT_LINE('Salary: ' || v_sal);
+END;
+/
